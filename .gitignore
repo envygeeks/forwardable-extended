@@ -1,0 +1,13 @@
+/.bundle
+/repos
+/*.gem
+/coverage
+/objects.txt
+/Gemfile.lock
+/.analysis
+/opts.yml
+/.hidden
+/vendor
+/data
+/copy
+/tmp

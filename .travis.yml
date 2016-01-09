@@ -1,0 +1,34 @@
+---
+cache: bundler
+os:
+- linux
+rvm:
+- 2.0
+- 2.1
+- 2.2
+- jruby-9.0.4.0
+matrix:
+  allow_failures:
+  - rvm: jruby-9.0.4.0
+notifications:
+  email:
+  - jordon@envygeeks.io
+branches:
+  only:
+  - master
+addons:
+    code_climate:
+        repo_token:
+          secure: "\
+            ELyCHQoLucEHuDmAKzpkrui9IXy7QJ4WEbt4zdl6FhENOQMjUWFcf7G5LNDIDvpJY9\
+            1qKzwpSS47SYg05+JYO+pQcjw94nd7mwcmaa9vZdZFvyvFV/W9UnHxKN76bN1jFJBA\
+            Inc016HKb3Kgpl3fb0Hvh8eN7YVvUi0Nh50mSJTH/rPlDYfT2gxs9ZY21O91XhSfZJ\
+            YtnxI4Tf5O5qbp2uFZc6IFy0/b1GAHOgovGmeh89cH2TDK3Vp8LhK24AbJpMrFadl+\
+            GzIJzKd4a+EM+xynlJnLExLKEHsfs7ilEvPleTA5tf8iVoZP22de4QWA7DzybvVBqp\
+            yF5KMQK2/ne4NOmdHIqJD67nqT64+eFd5us+aydsb4QN73MoxVuNrDE1Yk1F04snQl\
+            V76OHweb06EXy2pS3v10l7fEekgbqjR6SNPYjfSmWpG9Xlph8eYwbTTOMUuUXosEmM\
+            iYVOItus9yhnA6iR0zjjVstmVnNxYOTEaXeU8QXvKZll2nQT65Tkfq4t22/nAX/TYv\
+            BR2wl9cmvLuSeYSBUIm78SRG85jcTgcxQat2FfrOnhtfzAo4KaG5cX1kGKaePmSHI7\
+            uXfsi/Kz4bdsVK5LFmtPrhJLcPlE2ooYdifJZy8DQkWz0NnWAISGJGGt7boLmzgYEA\
+            RagC121Dlmh3SD54hsXqoKI=
+          "
