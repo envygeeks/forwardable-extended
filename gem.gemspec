@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.files = %W(Rakefile Gemfile LICENSE) + Dir["{lib,bin}/**/*"]
   spec.description = "Forwardable with hash, and instance variable extensions."
   spec.summary = "Forwardable with hash, and instance variable extensions."
-  spec.homepage = "http://github.com/envygeeks/extended-forwardable"
+  spec.homepage = "http://github.com/envygeeks/forwardable-extended"
   spec.email = ["jordon@envygeeks.io"]
   spec.name = "forwardable-extended"
   spec.require_paths = ["lib"]
