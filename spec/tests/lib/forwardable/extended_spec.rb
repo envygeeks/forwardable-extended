@@ -19,7 +19,7 @@ describe Forwardable::Extended do
       def_delegator :@hash1, :not_world1, :key => :hello1, :type => :hash, :bool => :reverse
       def_delegator :@ivar1, :not_hello1, :type => :ivar, :bool => :reverse
       def_delegator :@ivar1, :hello1, :type => :ivar, :bool => true
-      def_delegator :self, :test1, :test2, :args => :world
+      def_delegator :self, :test1, :test2, :args => %{"world"}
       def_delegator :@ivar2, :to_s
 
       def initialize
@@ -40,7 +40,7 @@ describe Forwardable::Extended do
     class Hello2
       extend Forwardable::Extended
       def_delegator :@class, :test1, {
-        :args => :routed
+        :args => %{"routed"}
       }
 
       def initialize

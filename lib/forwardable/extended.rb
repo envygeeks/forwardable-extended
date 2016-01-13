@@ -58,7 +58,7 @@ module Forwardable
 
     def def_modern_delegator(accessor, method, alias_ = method, args: [], bool: false)
       prefix = (bool == :reverse ? "!!!" : "!!") if bool
-      args = [args].flatten.compact.map(&:inspect).unshift("").join(", ")
+      args = [args].flatten.compact.map(&:to_s).unshift("").join(", ")
       suffix = (bool ? "?" : "")
 
       class_eval <<-STR, __FILE__, __LINE__
