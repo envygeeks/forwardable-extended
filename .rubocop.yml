@@ -51,6 +51,7 @@ Style/FileName:                       { Enabled: false }
 Lint/UselessAccessModifier:           { Enabled: false }
 Style/SpaceAroundOperators:           { Enabled: false }
 Style/RedundantReturn:                { Enabled: false }
+Lint/UnusedMethodArgument:            { Enabled: false }
 
 AllCops:
   TargetRubyVersion: 2.0
