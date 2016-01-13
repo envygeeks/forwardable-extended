@@ -14,40 +14,34 @@ Provides more `Forwardable` methods for your source as `Forwardable::Extended`.
 
 ## Current Methods
 
-* `def_delegator :@hash, key, :bool => true|false|:reverse`
-* `def_delegator :@hash, method, :key => :key, :bool => true|false|:reverse`
-* `def_delegator :@ivar, method, :bool => true|false|:reverse`
+* `def_delegator :hash_object, key, :bool => true|false|:reverse, :type => :hash`
+* `def_delegator :hash_object, alias, :key => :hash_key, :bool => true|false|:reverse, :type => :hash`
+* `def_delegator :variable_object, method_name, :bool => true|false|:reverse, :type => :ivar`
+* `def_delegator :object, method, <optional:alias>, :args => [:your_arg]]`
 
 Where if you send `:bool => true` then it will add "?" as a method suffix and
 "!!" in front of the variable, and if you send `:bool => :reverse` it will also
 add "?" as a method suffix and "!!!" in front of the variable.
 
-### Example
+If you send `:args => []` on a normal delegation we add your args to the front
+of the method any user args are concactinated by `ruby` through `*args`.  This makes
+it so you can do fancy things like:
 
 ```ruby
-class Hello
+require "forwardable/extended"
+
+class MyPathname
   extend Forwardable::Extended
+  def_delegator :File, :join, {
+    :args => [
+      :@path, %{"str_too"}
+    ]
+  }
 
-  def_delegator :@hash1, :hello1, :type => :hash
-  def_delegator :@hash1, :world1, :key => :hello1, :type => :hash
-  def_delegator :@hash1, :world1, :key => :hello1, :type => :hash, :bool => true
-  def_delegator :@hash1, :not_world1, :key => :hello1, :type => :hash, :bool => :reverse
-  def_delegator :@ivar1, :not_hello1, :type => :ivar, :bool => :reverse
-  def_delegator :@ivar1, :hello1, :type => :ivar, :bool => true
-
-  def initialize
-    @ivar1 = :hello1
-    @hash1 = {
-      :hello1 => :world1
-    }
+  def initialize(path)
+    @path = path
   end
 end
 
-a = Hello.new
-a.world1? # => true
-a.hello1  # => world1
-a.not_world1? # => false
-a.not_hello1? # => false
-a.world1  # => :world1
-a.hello1? # => true
+MyPathname.new("/tmp").join("world") # => "/tmp/str_too/world"
 ```
