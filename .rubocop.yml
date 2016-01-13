@@ -4,7 +4,7 @@ Metrics/ClassLength: { Max: 240 }
 Metrics/ModuleLength: { Max: 240 }
 Metrics/CyclomaticComplexity: { Max: 8 }
 Metrics/PerceivedComplexity: { Max: 8 }
-Metrics/ParameterLists: { Max: 6 }
+Metrics/ParameterLists: { Max: 8 }
 Metrics/MethodLength: { Max: 12 }
 Metrics/MethodLength: { Max: 24 }
 Metrics/AbcSize: { Max: 20 }
@@ -12,7 +12,6 @@ Metrics/AbcSize: { Max: 20 }
 Style/IndentHash: { EnforcedStyle: consistent }
 Style/SignalException: { EnforcedStyle: only_raise }
 Style/Semicolon: { AllowAsExpressionSeparator: true }
-Style/AlignParameters: { EnforcedStyle: with_fixed_indentation }
 Style/StringLiteralsInInterpolation: { EnforcedStyle: double_quotes }
 Style/RegexpLiteral: { EnforcedStyle: slashes, AllowInnerSlashes: true }
 Style/MultilineMethodCallIndentation: { EnforcedStyle: indented }
@@ -38,18 +37,19 @@ Style/StringLiterals:                 { Enabled: false }
 Style/Documentation:                  { Enabled: false }
 Style/DoubleNegation:                 { Enabled: false }
 Style/UnneededCapitalW:               { Enabled: false }
+Style/SpaceAroundOperators:           { Enabled: false }
 Style/MultilineTernaryOperator:       { Enabled: false }
 Style/EmptyLinesAroundModuleBody:     { Enabled: false }
 Style/EmptyLinesAroundAccessModifier: { Enabled: false }
 Style/BracesAroundHashParameters:     { Enabled: false }
+Lint/UselessAccessModifier:           { Enabled: false }
 Style/SpaceInsideBrackets:            { Enabled: false }
 Style/IfUnlessModifier:               { Enabled: false }
+Style/AlignParameters:                { Enabled: false }
 Style/ModuleFunction:                 { Enabled: false }
 Style/RescueModifier:                 { Enabled: false }
 Style/GuardClause:                    { Enabled: false }
 Style/FileName:                       { Enabled: false }
-Lint/UselessAccessModifier:           { Enabled: false }
-Style/SpaceAroundOperators:           { Enabled: false }
 Style/RedundantReturn:                { Enabled: false }
 Lint/UnusedMethodArgument:            { Enabled: false }
 

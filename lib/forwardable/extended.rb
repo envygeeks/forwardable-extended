@@ -8,7 +8,9 @@ require "forwardable"
 module Forwardable
   module Extended
     DEF_DELEGATOR = Object::Forwardable.instance_method(:def_delegator)
-    def def_hash_delegator(hash, method, key: method, bool: false, type: :ivar)
+    def def_hash_delegator(hash, method, key: method, bool: false, args: nil, \
+          user_args: nil, type: :ivar)
+
       prefix = (bool == :reverse ? "!!!" : "!!") if bool
       suffix = (bool ? "?" : "")
 
@@ -21,7 +23,9 @@ module Forwardable
 
     #
 
-    def def_ivar_delegator(ivar, alias_ = ivar, bool: false, type: :ivar)
+    def def_ivar_delegator(ivar, alias_ = ivar, bool: false, args: nil, \
+          user_args: nil, type: :ivar)
+
       prefix = (bool == :reverse ? "!!!" : "!!") if bool
       suffix = (bool ? "?" : "")
 
@@ -41,8 +45,11 @@ module Forwardable
         )
       end
 
-      return def_ivar_delegator(accessor, method, *args) if args.first[:type] == :ivar
-      return def_hash_delegator(accessor, method, *args) if args.first[:type] == :hash
+      if args.first[:type]
+        return send("def_#{args.first[:type]}_delegator",
+          accessor, method, *args)
+      end
+
       prefix = (kwd[:bool] == :reverse ? "!!!" : "!!") if kwd[:bool]
       suffix = (kwd[:bool] ? "?" : "")
 
