@@ -7,47 +7,50 @@ require "forwardable"
 
 module Forwardable
   module Extended
-    include Forwardable
+    DEF_DELEGATOR = Object::Forwardable.instance_method(:def_delegator)
+    def def_hash_delegator(hash, method, key: method, bool: false, type: :ivar)
+      prefix = (bool == :reverse ? "!!!" : "!!") if bool
+      suffix = (bool ? "?" : "")
 
-    def def_hash_delegator(hash, *methods, key: nil, bool: false, revbool: false)
-      line = __LINE__ - 1
-      file = __FILE__
-
-      [methods].flatten.each do |method|
-        prefix = bool || revbool ? "!!#{"!" if revbool}" : ""
-        var = key ? %(#{hash}["#{key}"]) : %(#{hash}["#{method}"])
-        method = method.to_s + "?" if revbool || bool
-
-        ruby = <<-STR
-          def #{method}
-            #{prefix}#{var}
-          end
-        STR
-
-        class_eval ruby, file, line
-      end
-    end
-
-    def def_ivar_delegator(var, method, bool: false, revbool: false)
-      line = __LINE__ - 1
-      file = __FILE__
-
-      prefix = revbool || bool ? "!!#{"!" if revbool}" : ""
-      method = method.to_s + "?" if revbool || bool
-      ruby = <<-STR
-        def #{method}
-          #{prefix}#{var}
+      class_eval <<-STR, __FILE__, __LINE__
+        def #{method}#{suffix}
+          #{prefix}#{hash}[#{key.inspect}]
         end
       STR
-
-      class_eval ruby, file, line
     end
 
-    def def_ivar_delegators(vars, methods, **kwd)
-      raise ArgumentError, "unequal methods and vars" unless vars.size == methods.size
-      methods.zip(vars).each do |method, var|
-        def_ivar_delegator var, method, **kwd
+    #
+
+    def def_ivar_delegator(ivar, alias_ = ivar, bool: false, type: :ivar)
+      prefix = (bool == :reverse ? "!!!" : "!!") if bool
+      suffix = (bool ? "?" : "")
+
+      class_eval <<-STR, __FILE__, __LINE__
+        def #{alias_.to_s.gsub(/\A@/, "")}#{suffix}
+          #{prefix}#{ivar}
+        end
+      STR
+    end
+
+    #
+
+    def def_delegator(accessor, method, *args)
+      if args.empty? || args.size > 1 || !args.first.is_a?(Hash)
+        return DEF_DELEGATOR.bind(self).call(
+          accessor, method, *args
+        )
       end
+
+      return def_ivar_delegator(accessor, method, *args) if args.first[:type] == :ivar
+      return def_hash_delegator(accessor, method, *args) if args.first[:type] == :hash
+      prefix = (kwd[:bool] == :reverse ? "!!!" : "!!") if kwd[:bool]
+      suffix = (kwd[:bool] ? "?" : "")
+
+      class_eval <<-STR, __FILE__, __LINE__
+        def #{method}#{suffix}
+          #{prefix}#{accessor}.send(#{alias_.inspect})
+        end
+      STR
     end
   end
 end

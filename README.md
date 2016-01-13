@@ -14,9 +14,40 @@ Provides more `Forwardable` methods for your source as `Forwardable::Extended`.
 
 ## Current Methods
 
-* `def_hash_delegator  hash, method, bool: true|false, revbool: true|false`
-* `def_ivar_delegators [ivar, ivar], [method, method], bool: true|false, revbool: true|false`
-* `def_hash_delegator  hash, method, key: hash_key, bool: true|false, revbool: true|false`
-* `def_ivar_delegator  ivar, method, bool: true|false, revbool: true|false`
+* `def_delegator :@hash, key, :bool => true|false|:reverse`
+* `def_delegator :@hash, method, :key => :key, :bool => true|false|:reverse`
+* `def_delegator :@ivar, method, :bool => true|false|:reverse`
 
-Where `bool` tell is to do "!!" and `revbool` tells it to do `!!!` and both tell it to make it a question method, so `def_hash_delegator :@hash, :key, bool: true` will create `key?` for you and it will return true or false on your behalf without you having to do it yourself.
+Where if you send `:bool => true` then it will add "?" as a method suffix and
+"!!" in front of the variable, and if you send `:bool => :reverse` it will also
+add "?" as a method suffix and "!!!" in front of the variable.
+
+### Example
+
+```ruby
+class Hello
+  extend Forwardable::Extended
+
+  def_delegator :@hash1, :hello1, :type => :hash
+  def_delegator :@hash1, :world1, :key => :hello1, :type => :hash
+  def_delegator :@hash1, :world1, :key => :hello1, :type => :hash, :bool => true
+  def_delegator :@hash1, :not_world1, :key => :hello1, :type => :hash, :bool => :reverse
+  def_delegator :@ivar1, :not_hello1, :type => :ivar, :bool => :reverse
+  def_delegator :@ivar1, :hello1, :type => :ivar, :bool => true
+
+  def initialize
+    @ivar1 = :hello1
+    @hash1 = {
+      :hello1 => :world1
+    }
+  end
+end
+
+a = Hello.new
+a.world1? # => true
+a.hello1  # => world1
+a.not_world1? # => false
+a.not_hello1? # => false
+a.world1  # => :world1
+a.hello1? # => true
+```
