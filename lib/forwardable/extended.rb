@@ -8,26 +8,30 @@ require "forwardable"
 module Forwardable
   module Extended
     DEF_DELEGATOR = Object::Forwardable.instance_method(:def_delegator)
-    def def_hash_delegator(hash, method, key: method, bool: false, type: :ivar)
+    def def_hash_delegator(hash, method, key: method, bool: false, wrap: false)
       prefix = (bool == :reverse ? "!!!" : "!!") if bool
+      wrap = "self.class.new" if wrap.is_a?(TrueClass)
+      wrap = wrap ? "#{wrap} " : ""
       suffix = (bool ? "?" : "")
 
       class_eval <<-STR, __FILE__, __LINE__
         def #{method}#{suffix}
-          #{prefix}#{hash}[#{key.inspect}]
+          #{wrap}#{prefix}#{hash}[#{key.inspect}]
         end
       STR
     end
 
     #
 
-    def def_ivar_delegator(ivar, alias_ = ivar, bool: false, type: :ivar)
+    def def_ivar_delegator(ivar, alias_ = ivar, bool: false, wrap: false)
       prefix = (bool == :reverse ? "!!!" : "!!") if bool
+      wrap = "self.class.new" if wrap.is_a?(TrueClass)
+      wrap = wrap ? "#{wrap} " : ""
       suffix = (bool ? "?" : "")
 
       class_eval <<-STR, __FILE__, __LINE__
         def #{alias_.to_s.gsub(/\A@/, "")}#{suffix}
-          #{prefix}#{ivar}
+          #{wrap}#{prefix}#{ivar}
         end
       STR
     end
@@ -44,8 +48,9 @@ module Forwardable
 
       elsif kwd[:type]
         raise ArgumentError, "Alias not supported with type; the method is the alias" if alias_ != method
-        send("def_#{kwd[:type]}_delegator", \
-          accessor, method, **kwd)
+        send("def_#{kwd[:type]}_delegator", accessor, method, **kwd.tap { |obj|
+          obj.delete(:type)
+        })
 
       else
         def_modern_delegator(
@@ -56,14 +61,16 @@ module Forwardable
 
     #
 
-    def def_modern_delegator(accessor, method, alias_ = method, args: [], bool: false)
-      prefix = (bool == :reverse ? "!!!" : "!!") if bool
+    def def_modern_delegator(accessor, method, alias_ = method, args: [], bool: false, wrap: false)
       args = [args].flatten.compact.map(&:to_s).unshift("").join(", ")
+      prefix = (bool == :reverse ? "!!!" : "!!") if bool
+      wrap = "self.class.new" if wrap.is_a?(TrueClass)
+      wrap = wrap ? "#{wrap} " : ""
       suffix = (bool ? "?" : "")
 
       class_eval <<-STR, __FILE__, __LINE__
         def #{alias_}#{suffix}(*args, &block)
-          #{prefix}#{accessor}.send(#{method.inspect}#{args + ", *args"}, &block)
+          #{wrap}#{prefix}#{accessor}.send(#{method.inspect}#{args + ", *args"}, &block)
         end
       STR
     end

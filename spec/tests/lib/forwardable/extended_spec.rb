@@ -15,6 +15,7 @@ describe Forwardable::Extended do
 
       def_delegator :@hash1, :hello1, :type => :hash
       def_delegator :@hash1, :world1, :key => :hello1, :type => :hash
+      def_delegator :@ivar1, :to_s, :wrap_test, :wrap => :"Pathname.new"
       def_delegator :@hash1, :world1, :key => :hello1, :type => :hash, :bool => true
       def_delegator :@hash1, :not_world1, :key => :hello1, :type => :hash, :bool => :reverse
       def_delegator :@ivar1, :not_hello1, :type => :ivar, :bool => :reverse
@@ -70,5 +71,6 @@ describe Forwardable::Extended do
   specify { expect(subject1.hello1?).to eq true }
   specify { expect(subject1.test2(:it, :works)).to eq "world it works" }
   specify { expect(subject2.test1(:hello, :world)).to eq "routed hello world"}
+  specify { expect(subject1.wrap_test).to eq Pathname.new("hello1") }
   specify { expect(subject1.to_s).to eq "hello2" }
 end
