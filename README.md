@@ -14,10 +14,11 @@ Provides more `Forwardable` methods for your source as `Forwardable::Extended`.
 
 ## Current Methods
 
-* `def_delegator :hash_object, key, :bool => true|false|:reverse, :type => :hash`
-* `def_delegator :hash_object, alias, :key => :hash_key, :bool => true|false|:reverse, :type => :hash`
-* `def_delegator :variable_object, method_name, :bool => true|false|:reverse, :type => :ivar`
-* `def_delegator :object, method, <optional:alias>, :args => [:your_arg]]`
+* `def_delegator  :hash_object, key, :bool => true|false|:reverse, :type => :hash`
+* `def_delegator  :hash_object, alias, :key => :hash_key, :bool => true|false|:reverse, :type => :hash`
+* `def_delegator  :variable_object, method_name, :bool => true|false|:reverse, :type => :ivar`
+* `def_delegators :object, :method, :method, :method, :args => [:your_optional_arg]`
+* `def_delegator  :object, method, <optional:alias>, :args => [:your_arg]`
 
 Where if you send `:bool => true` then it will add "?" as a method suffix and
 "!!" in front of the variable, and if you send `:bool => :reverse` it will also
