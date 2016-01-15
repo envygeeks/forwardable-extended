@@ -40,9 +40,8 @@ describe Forwardable::Extended do
 
     class Hello2
       extend Forwardable::Extended
-      def_delegator :@class, :test1, {
-        :args => %{"routed"}
-      }
+      def_delegators :File, :basename, :dirname, :args => %q{"/tmp/hello"}
+      def_delegator  :@class, :test1, :args => %{"routed"}
 
       def initialize
         @class = Hello1.new
@@ -72,5 +71,7 @@ describe Forwardable::Extended do
   specify { expect(subject1.test2(:it, :works)).to eq "world it works" }
   specify { expect(subject2.test1(:hello, :world)).to eq "routed hello world"}
   specify { expect(subject1.wrap_test).to eq Pathname.new("hello1") }
+  specify { expect(subject2.basename).to eq "hello" }
+  specify { expect(subject2.dirname).to eq "/tmp" }
   specify { expect(subject1.to_s).to eq "hello2" }
 end
