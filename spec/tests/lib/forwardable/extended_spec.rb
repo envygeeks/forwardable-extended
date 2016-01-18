@@ -110,7 +110,7 @@ describe Forwardable::Extended do
 
   specify do
     expect(subject1).to respond_to(
-      :not_world1
+      :not_world1?
     )
   end
 
@@ -118,7 +118,7 @@ describe Forwardable::Extended do
 
   specify do
     expect(subject1).to respond_to(
-      :not_hello1
+      :not_hello1?
     )
   end
 
@@ -142,7 +142,7 @@ describe Forwardable::Extended do
 
   specify do
     expect(subject1).to respond_to(
-      :to_
+      :to_s
     )
   end
 
@@ -262,7 +262,7 @@ describe Forwardable::Extended do
 
   specify do
     expect(subject3).to respond_to(
-      :not_world1
+      :not_world1?
     )
   end
 
@@ -270,7 +270,7 @@ describe Forwardable::Extended do
 
   specify do
     expect(subject3).to respond_to(
-      :not_hello1
+      :not_hello1?
     )
   end
 
@@ -294,7 +294,7 @@ describe Forwardable::Extended do
 
   specify do
     expect(subject3).to respond_to(
-      :to_
+      :to_s
     )
   end
 
