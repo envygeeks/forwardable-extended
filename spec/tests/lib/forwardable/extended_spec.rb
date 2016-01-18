@@ -39,6 +39,8 @@ describe Forwardable::Extended do
       end
     end
 
+    #
+
     class Hello2
       extend Forwardable::Extended
       def_delegators :File, :basename, :dirname, :args => %q{"/tmp/hello"}
@@ -48,6 +50,8 @@ describe Forwardable::Extended do
         @class = Hello1.new
       end
     end
+
+    #
 
     class Hello3
       extend Forwardable::Extended
@@ -78,49 +82,291 @@ describe Forwardable::Extended do
     end
   end
 
+  #
+
   after :all do
     Object.send(:remove_const, :Hello1)
     Object.send(:remove_const, :Hello2)
     Object.send(:remove_const, :Hello3)
   end
 
-  specify { expect(subject1).to respond_to :hello1  }
-  specify { expect(subject1).to respond_to :world1  }
-  specify { expect(subject1).to respond_to :not_world1? }
-  specify { expect(subject1).to respond_to :not_hello1? }
-  specify { expect(subject1).to respond_to :world1? }
-  specify { expect(subject1).to respond_to :hello1? }
-  specify { expect(subject1).to respond_to :to_s }
+  #
 
-  specify { expect(subject1.world1?).to eq true }
-  specify { expect(subject1.hello1 ).to eq :world1 }
-  specify { expect(subject1.not_world1?).to eq false }
-  specify { expect(subject1.test2(:it, :works)).to eq "world it works" }
-  specify { expect(subject1.wrap_test).to eq Pathname.new("hello1") }
-  specify { expect(subject1.not_hello1?).to eq false }
-  specify { expect(subject1.world1 ).to eq :world1 }
-  specify { expect(subject1.hello1?).to eq true }
-  specify { expect(subject1.to_s).to eq "hello2" }
+  specify do
+    expect(subject1).to respond_to(
+      :hello1
+    )
+  end
 
-  specify { expect(subject2.basename).to eq "hello" }
-  specify { expect(subject2.test1(:hello, :world)).to eq "routed hello world"}
-  specify { expect(subject2.dirname).to eq "/tmp" }
+  #
 
-  specify { expect(subject3).to respond_to :hello1  }
-  specify { expect(subject3).to respond_to :world1  }
-  specify { expect(subject3).to respond_to :not_world1? }
-  specify { expect(subject3).to respond_to :not_hello1? }
-  specify { expect(subject3).to respond_to :world1? }
-  specify { expect(subject3).to respond_to :hello1? }
-  specify { expect(subject3).to respond_to :to_s }
+  specify do
+    expect(subject1).to respond_to(
+      :world1
+    )
+  end
 
-  specify { expect(subject3.world1?).to eq true }
-  specify { expect(subject3.hello1 ).to eq :world1 }
-  specify { expect(subject3.not_world1?).to eq false }
-  specify { expect(subject3.test2(:it, :works)).to eq "world it works" }
-  specify { expect(subject3.wrap_test).to eq Pathname.new("hello1") }
-  specify { expect(subject3.not_hello1?).to eq false }
-  specify { expect(subject3.world1 ).to eq :world1 }
-  specify { expect(subject3.hello1?).to eq true }
-  specify { expect(subject3.to_s).to eq "hello2" }
+  #
+
+  specify do
+    expect(subject1).to respond_to(
+      :not_world1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject1).to respond_to(
+      :not_hello1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject1).to respond_to(
+      :world1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject1).to respond_to(
+      :hello1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject1).to respond_to(
+      :to_
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject1.world1?).to eq(
+      true
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject1.hello1 ).to eq(
+      :world1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject1.not_world1?).to eq(
+      false
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject1.test2(:it, :works)).to eq(
+      "world it works"
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject1.wrap_test).to eq(
+      Pathname.new("hello1")
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject1.not_hello1?).to eq(
+      false
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject1.world1 ).to eq(
+      :world1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject1.hello1?).to eq(
+      true
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject1.to_s).to eq(
+      "hello2"
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject2.basename).to eq(
+      "hello"
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject2.test1(:hello, :world)).to eq(
+      "routed hello world"
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject2.dirname).to eq(
+      "/tmp"
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3).to respond_to(
+      :hello1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3).to respond_to(
+      :world1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3).to respond_to(
+      :not_world1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3).to respond_to(
+      :not_hello1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3).to respond_to(
+      :world1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3).to respond_to(
+      :hello1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3).to respond_to(
+      :to_
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3.world1?).to eq(
+      true
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3.hello1 ).to eq(
+      :world1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3.not_world1?).to eq(
+      false
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3.test2(:it, :works)).to eq(
+      "world it works"
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3.wrap_test).to eq(
+      Pathname.new("hello1")
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3.not_hello1?).to eq(
+      false
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3.world1 ).to eq(
+      :world1
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3.hello1?).to eq(
+      true
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3.to_s).to eq(
+      "hello2"
+    )
+  end
 end
