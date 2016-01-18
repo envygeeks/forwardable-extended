@@ -20,9 +20,20 @@ module Forwardable
     def def_hash_delegator(hash, method, key: method, **kwd)
       prefix, suffix, wrap = __prepare(**kwd)
 
-      class_eval <<-STR, __FILE__, __LINE__
+      class_eval <<-STR, __FILE__, __LINE__ - 3
         def #{method}#{suffix}(*args)
-          #{wrap} #{prefix} #{hash}[#{key.inspect}]
+          #{wrap}(
+            #{prefix}#{hash}[#{key.inspect}]
+          )
+
+        rescue Exception
+          unless Forwardable.debug
+            $@.delete_if do |source|
+              source =~ %r"#{Regexp.escape(__FILE__)}"o
+            end
+          end
+
+          raise
         end
       STR
     end
@@ -37,9 +48,20 @@ module Forwardable
     def def_ivar_delegator(ivar, alias_ = ivar, **kwd)
       prefix, suffix, wrap = __prepare(**kwd)
 
-      class_eval <<-STR, __FILE__, __LINE__
+      class_eval <<-STR, __FILE__, __LINE__ - 3
         def #{alias_.to_s.gsub(/\A@/, "")}#{suffix}
-          #{wrap} #{prefix} #{ivar}
+          #{wrap}(
+            #{prefix}#{ivar}
+          )
+
+        rescue Exception
+          unless Forwardable.debug
+            $@.delete_if do |source|
+              source =~ %r"#{Regexp.escape(__FILE__)}"o
+            end
+          end
+
+          raise
         end
       STR
     end
@@ -56,9 +78,24 @@ module Forwardable
       args = [args].flatten.compact.map(&:to_s).unshift("").join(", ")
       prefix, suffix, wrap = __prepare(**kwd)
 
-      class_eval <<-STR, __FILE__, __LINE__
+      if suffix
+        alias_ = alias_.to_s.gsub(/\?$/, "")
+      end
+
+      class_eval <<-STR, __FILE__, __LINE__ - 4
         def #{alias_}#{suffix}(*args, &block)
-          #{wrap} #{prefix} #{accessor}.send(#{method.inspect}#{args}, *args, &block)
+          #{wrap}(#{prefix}#{accessor}.send(
+            #{method.inspect}#{args}, *args, &block
+          ))
+
+        rescue Exception
+          unless Forwardable.debug
+            $@.delete_if do |source|
+              source =~ %r"#{Regexp.escape(__FILE__)}"o
+            end
+          end
+
+          raise
         end
       STR
     end
