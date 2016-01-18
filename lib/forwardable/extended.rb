@@ -61,13 +61,22 @@ module Forwardable
 
     def def_delegator(accessor, method, alias_ = method, **kwd)
       kwd, alias_ = alias_, method if alias_.is_a?(Hash) && !kwd.any?
-      return DEF_DELEGATOR.bind(self).call(accessor, method, alias_) if alias_.is_a?(Hash) || !kwd.any?
-      return def_modern_delegator(accessor, method, alias_, **kwd) unless kwd[:type]
 
-      raise ArgumentError, "Alias not supported with type" if alias_ != method
-      send("def_#{kwd[:type]}_delegator", accessor, method, **kwd.tap { |obj|
-        obj.delete(:type)
-      })
+      if alias_.is_a?(Hash) || !kwd.any?
+        Forwardable.instance_method(:def_delegator).bind(self) \
+          .call(accessor, method, alias_)
+
+      elsif !kwd[:type]
+        def_modern_delegator(
+          accessor, method, alias_, **kwd
+        )
+
+      else
+        raise ArgumentError, "Alias not supported with type" if alias_ != method
+        send("def_#{kwd[:type]}_delegator", accessor, method, **kwd.tap { |obj|
+          obj.delete(:type)
+        })
+      end
     end
 
     # Wraps around traditional `def_delegators` to detect hash arguments.
