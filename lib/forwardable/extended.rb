@@ -29,7 +29,12 @@ module Forwardable
 
     def def_hash_delegator(hash, method, key: method, **kwd)
       prefix, suffix, wrap = __prepare(**kwd)
-      method = method.to_s.gsub(/\?$/, "")
+
+      if suffix
+        method = method.to_s.gsub(
+          /\?$/, ""
+        )
+      end
 
       class_eval <<-STR, __FILE__, __LINE__ - 3
         def #{method}#{suffix}(*args)
@@ -58,7 +63,12 @@ module Forwardable
 
     def def_ivar_delegator(ivar, alias_ = ivar, **kwd)
       prefix, suffix, wrap = __prepare(**kwd)
-      alias_ = alias_.to_s.gsub(/\?$/, "")
+
+      if suffix
+        alias_ = alias_.to_s.gsub(
+          /\?$/, ""
+        )
+      end
 
       class_eval <<-STR, __FILE__, __LINE__ - 3
         def #{alias_.to_s.gsub(/\A@/, "")}#{suffix}
@@ -89,7 +99,12 @@ module Forwardable
     def def_modern_delegator(accessor, method, alias_ = method, args: [], **kwd)
       args = [args].flatten.compact.map(&:to_s).unshift("").join(", ")
       prefix, suffix, wrap = __prepare(**kwd)
-      alias_ = alias_.to_s.gsub(/\?$/, "")
+
+      if suffix
+        alias_ = alias_.to_s.gsub(
+          /\?$/, ""
+        )
+      end
 
       class_eval <<-STR, __FILE__, __LINE__ - 4
         def #{alias_}#{suffix}(*args, &block)

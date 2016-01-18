@@ -63,6 +63,7 @@ describe Forwardable::Extended do
       rb_delegate :not_world1?, :to => :@hash1, :key => :hello1, :type => :hash, :bool => :reverse
       rb_delegate :not_hello1, :to => :@ivar1, :type => :ivar, :bool => :reverse
       rb_delegate :hello1, :to => :@ivar1, :type => :ivar, :bool => true
+      rb_delegate :directory?, :to => :FileTest
       rb_delegate :to_s, :to => :@ivar2
 
       def initialize
@@ -295,6 +296,14 @@ describe Forwardable::Extended do
   specify do
     expect(subject3).to respond_to(
       :to_s
+    )
+  end
+
+  #
+
+  specify do
+    expect(subject3).to respond_to(
+      :directory?
     )
   end
 
