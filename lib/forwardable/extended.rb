@@ -9,7 +9,17 @@ require "forwardable"
 
 module Forwardable
   module Extended
-    DEF_DELEGATOR = Object::Forwardable.instance_method(:def_delegator)
+
+    # ------------------------------------------------------------------------
+    # A simpler delegator that wraps around `def_delegator` and makes it easy.
+    # ------------------------------------------------------------------------
+
+    def rb_delegate(method, to: nil, alias_of: method, **kwd)
+      raise ArgumentError, "to must be provided" unless to
+      def_delegator(
+        to, alias_of, method, **kwd
+      )
+    end
 
     # ------------------------------------------------------------------------
     # Delegates a method to a `hash[key]`.
