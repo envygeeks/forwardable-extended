@@ -11,6 +11,18 @@ module Forwardable
   module Extended
 
     # ------------------------------------------------------------------------
+    # Make our methods private on the class, there is no reason for public.
+    # ------------------------------------------------------------------------
+
+    def self.extended(klass)
+      instance_methods.each do |method|
+        klass.private_class_method(
+          method
+        )
+      end
+    end
+
+    # ------------------------------------------------------------------------
     # A simpler delegator that wraps around `def_delegator` and makes it easy.
     # ------------------------------------------------------------------------
 
