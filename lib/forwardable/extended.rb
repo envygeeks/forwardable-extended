@@ -48,7 +48,7 @@ module Forwardable
         )
       end
 
-      class_eval <<-STR, __FILE__, __LINE__ - 3
+      class_eval <<-STR, __FILE__, __LINE__ - 9
         def #{method}#{suffix}(*args)
           #{wrap}(
             #{prefix}#{hash}[#{key.inspect}]
@@ -82,7 +82,7 @@ module Forwardable
         )
       end
 
-      class_eval <<-STR, __FILE__, __LINE__ - 3
+      class_eval <<-STR, __FILE__, __LINE__ - 9
         def #{alias_.to_s.gsub(/\A@/, "")}#{suffix}
           #{wrap}(
             #{prefix}#{ivar}
@@ -118,7 +118,7 @@ module Forwardable
         )
       end
 
-      class_eval <<-STR, __FILE__, __LINE__ - 4
+      class_eval <<-STR, __FILE__, __LINE__ - 10
         def #{alias_}#{suffix}(*args, &block)
           #{wrap}(#{prefix}#{accessor}.send(
             #{method.inspect}#{args}, *args, &block
