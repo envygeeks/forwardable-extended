@@ -12,37 +12,15 @@
 
 Provides more `Forwardable` methods for your source as `Forwardable::Extended`.
 
-## Current Methods
-
-* `def_delegator  :hash_object, key, :bool => true|false|:reverse, :type => :hash`
-* `def_delegator  :hash_object, alias, :key => :hash_key, :bool => true|false|:reverse, :type => :hash`
-* `def_delegator  :variable_object, method_name, :bool => true|false|:reverse, :type => :ivar`
-* `def_delegators :object, :method, :method, :method, :args => [:your_optional_arg]`
-* `def_delegator  :object, method, <optional:alias>, :args => [:your_arg]`
-
-Where if you send `:bool => true` then it will add "?" as a method suffix and
-"!!" in front of the variable, and if you send `:bool => :reverse` it will also
-add "?" as a method suffix and "!!!" in front of the variable.
-
-If you send `:args => []` on a normal delegation we add your args to the front
-of the method any user args are concactinated by `ruby` through `*args`.  This makes
-it so you can do fancy things like:
-
 ```ruby
-require "forwardable/extended"
-
-class MyPathname
-  extend Forwardable::Extended
-  def_delegator :File, :join, {
-    :args => [
-      :@path, %{"str_too"}
-    ]
-  }
-
-  def initialize(path)
-    @path = path
-  end
+class MyClass
+  rb_delegate :method_name, :to => :@ivar, :type => :ivar, :boolean => true
+  rb_delegate :method_name, :to => :@ivar, :type => :ivar, :boolean => :reverse
+  rb_delegate :method_name, :to => :hash, :type => :hash, :key => :the_key
+  rb_delegate :method_name_is_key, :to => :hash, :type => :hash
 end
-
-MyPathname.new("/tmp").join("world") # => "/tmp/str_too/world"
 ```
+
+* Any delegation can accept `alias_of` which will be the message sent to the object.
+* You can send arguments by attaching the keyword `:args => [:my_arg]`, these are sent a `#to_s` message.
+* Any delegation can be boolean if you wish it to be, even `:reverse`.
