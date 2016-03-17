@@ -9,7 +9,7 @@ gemspec
 group :test do
   gem "rspec-helpers", :require => false
   gem "codeclimate-test-reporter", :require => false
-  gem "luna-rspec-formatters", :require => false, :github => "envygeeks/luna-rspec-formatters"
+  gem "luna-rspec-formatters", :require => false
   gem "rspec", :require => false
 end
 
