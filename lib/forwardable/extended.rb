@@ -157,10 +157,11 @@ module Forwardable
       end
     end
 
+    private
     # Prepares a delegate and it's few arguments.
     # wrap - whether to wrap (or the class to wrap it with.)
     # bool - whether or not this delegate is a boolean.
-    private def prepare_delegate(wrap: nil, bool: false)
+    def prepare_delegate(wrap: nil, bool: false)
       prefix = (bool == :reverse ? "!!!" : "!!") if bool
       wrap   = "self.class.new" if wrap.is_a?(TrueClass)
       suffix = "?" if bool
