@@ -14,6 +14,7 @@ group :test do
 end
 
 group :development do
+  gem "luna-rubocop-formatters", :require => false
   gem "rubocop", :github => "bbatsov/rubocop", :require => false
   gem "pry", {
     :require => false
