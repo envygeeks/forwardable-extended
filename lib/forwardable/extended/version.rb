@@ -4,6 +4,6 @@
 
 module Forwardable
   module Extended
-    VERSION = "2.5.1"
+    VERSION = "2.5.2"
   end
 end
