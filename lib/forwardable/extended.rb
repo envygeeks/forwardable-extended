@@ -53,7 +53,7 @@ module Forwardable
           )
 
         rescue Exception
-          unless Forwardable.debug
+          if !Forwardable.debug && $@ && $@.respond_to?(:delete_if)
             $@.delete_if do |source|
               source =~ %r"#{Regexp.escape(__FILE__)}"o
             end
@@ -84,7 +84,7 @@ module Forwardable
           )
 
         rescue Exception
-          unless Forwardable.debug
+          if !Forwardable.debug && $@ && $@.respond_to?(:delete_if)
             $@.delete_if do |source|
               source =~ %r"#{Regexp.escape(__FILE__)}"o
             end
@@ -116,7 +116,7 @@ module Forwardable
           ))
 
         rescue Exception
-          unless Forwardable.debug
+          if !Forwardable.debug && $@ && $@.respond_to?(:delete_if)
             $@.delete_if do |source|
               source =~ %r"#{Regexp.escape(__FILE__)}"o
             end
