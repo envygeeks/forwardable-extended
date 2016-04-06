@@ -99,20 +99,21 @@ module Forwardable
     # Like def_delegator but allows you to send args and do other stuff.
     # ------------------------------------------------------------------------
 
-    def def_modern_delegator(accessor, method, alias_ = method, args: [], **kwd)
-      args = [args].flatten.compact.map(&:to_s).unshift("").join(", ")
-      prefix, suffix, wrap = prepare_delegate(**kwd)
+    def def_modern_delegator(accessor, method, alias_ = method, args: \
+        { :before => [], :after => [] }, **kwd)
 
-      if suffix
-        alias_ = alias_.to_s.gsub(
-          /\?$/, ""
-        )
-      end
+      prefix, suffix, wrap = prepare_delegate(**kwd)
+      args = { :before => args } unless args.is_a?(Hash)
+      b = [args[:before]].flatten.compact.map(&:to_s).join(", ")
+      a = [args[ :after]].flatten.compact.map(&:to_s).join(", ")
+      b = b + ", " unless args[:before].nil? || args[:before].empty?
+      a = ", " + a unless args[ :after].nil? || args[ :after].empty?
+      alias_ = alias_.to_s.gsub(/\?$/, "") if suffix
 
       class_eval delegate_debug(<<-STR), __FILE__, __LINE__ - 10
         def #{alias_}#{suffix}(*args, &block)
           #{wrap}(#{prefix}#{accessor}.send(
-            #{method.inspect}#{args}, *args, &block
+            #{method.inspect}, #{b}*args#{a}, &block
           ))
 
         rescue Exception
