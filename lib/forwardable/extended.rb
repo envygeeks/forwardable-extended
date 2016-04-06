@@ -184,7 +184,12 @@ module Forwardable
 
     private
     def delegate_debug(str)
-      if Forwardable.debug
+      if Forwardable.debug && !Forwardable.debug.is_a?(TrueClass)
+        then Forwardable.debug.debug(
+          str
+        )
+
+      elsif Forwardable.debug
         $stdout.puts(
           "\n# ------\n\n", str
         )
