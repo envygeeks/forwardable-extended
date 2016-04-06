@@ -6,378 +6,229 @@
 
 require "rspec/helper"
 describe Forwardable::Extended do
-  let(:subject1) { Hello1.new }
-  let(:subject2) { Hello2.new }
-  let(:subject3) { Hello3.new }
+  class ForwardableExtendedTestClass1
+    extend Forwardable::Extended
+    Forwardable::Extended.instance_methods.map do |m|
+      rb_delegate m, :to => :"self.class"
+    end
+
+    #
+
+    def wrap_test(val)
+      return {
+        :wrapped => val
+      }
+    end
+  end
 
   #
 
-  before :all do
-    class Hello1
-      extend Forwardable::Extended
+  subject do
+    (ForwardableExtendedTestClass1.dup).new
+  end
 
-      def_delegator :@hash1, :hello1, :type => :hash
-      def_delegator :@hash1, :world1, :key => :hello1, :type => :hash
-      def_delegator :@ivar1, :to_s, :wrap_test, :wrap => :"Pathname.new"
-      def_delegator :@hash1, :world1, :key => :hello1, :type => :hash, :bool => true
-      def_delegator :@hash1, :not_world1, :key => :hello1, :type => :hash, :bool => :reverse
-      def_delegator :@ivar1, :not_hello1, :type => :ivar, :bool => :reverse
-      def_delegator :@ivar1, :hello1, :type => :ivar, :bool => true
-      def_delegator :self, :test1, :test2, :args => %{"world"}
-      def_delegator :@ivar2, :to_s
+  #
 
-      def initialize
-        @ivar1 = :hello1
-        @ivar2 = :hello2
-        @hash1 = {
-          :hello1 => :world1
-        }
-      end
+  describe "#def_hash_delegator" do
+    before do
+      subject.instance_variable_set(:@test, {
+        :key => :val
+      })
+    end
 
-      def test1(*args)
-        args.join(
-          " "
+    #
+
+    context "when not given a key" do
+      it "should infer the key from the method" do
+        subject.def_hash_delegator :@test, :key
+        expect(subject.key).to eq(
+          :val
         )
       end
     end
 
     #
 
-    class Hello2
-      extend Forwardable::Extended
-      def_delegators :File, :basename, :dirname, :args => %q{"/tmp/hello"}
-      def_delegator  :@class, :test1, :args => %{"routed"}
-
-      def initialize
-        @class = Hello1.new
+    context "when given a key via :key => key" do
+      it "should use that key" do
+        subject.def_hash_delegator :@test, :hello, :key => :key
+        expect(subject.hello).to eq(
+          :val
+        )
       end
     end
 
     #
 
-    class Hello3
-      extend Forwardable::Extended
-      rb_delegate :hello1, :to => :@hash1, :type => :hash
-      rb_delegate :world1, :to => :@hash1, :key => :hello1, :type => :hash
-      rb_delegate :test2, :to => :self, :args => %{"world"}, :alias_of => :test1
-      rb_delegate :wrap_test, :to => :@ivar1, :alias_of => :to_s, :wrap => :"Pathname.new"
-      rb_delegate :world1, :to => :@hash1, :key => :hello1, :type => :hash, :bool => true
-      rb_delegate :not_world1?, :to => :@hash1, :key => :hello1, :type => :hash, :bool => :reverse
-      rb_delegate :not_hello1, :to => :@ivar1, :type => :ivar, :bool => :reverse
-      rb_delegate :hello1, :to => :@ivar1, :type => :ivar, :bool => true
-      rb_delegate :directory?, :to => :FileTest
-      rb_delegate :to_s, :to => :@ivar2
-
-      def initialize
-        @ivar1 = :hello1
-        @ivar2 = :hello2
-        @hash1 = {
-          :hello1 => :world1
-        }
+    context "when creating booleans" do
+      context "when given a method name without ?" do
+        it "should add the ?" do
+          subject.def_hash_delegator :@test, :key, :bool => true
+          expect(subject).to respond_to(
+            :key?
+          )
+        end
       end
 
-      def test1(*args)
-        args.join(
-          " "
+        #
+
+      context "when given a method name with ?" do
+        it "should keep it" do
+          subject.def_hash_delegator :@test, :key?, :bool => true, :key => :key
+          expect(subject).to respond_to(
+            :key?
+          )
+        end
+      end
+
+      #
+
+      it "supports reverse booleans" do
+        subject.def_hash_delegator :@test, :key, :bool => :reverse
+        expect(subject.key?).to eq(
+          false
         )
       end
 
+      #
+
+      it "supports truthy booleans" do
+        subject.def_hash_delegator :@test, :key, :bool => true
+        expect(subject.key?).to eq(
+          true
+        )
+      end
+
+      #
+
+      context "wrapping" do
+        it "allows the user to wrap the result in another method or class" do
+          subject.def_hash_delegator :@test, :key, :wrap => :wrap_test
+          expect(subject.key).to eq({
+            :wrapped => :val
+          })
+        end
+      end
     end
   end
 
   #
 
-  after :all do
-    Object.send(:remove_const, :Hello1)
-    Object.send(:remove_const, :Hello2)
-    Object.send(:remove_const, :Hello3)
+  describe "#def_ivar_delegator" do
+    before do
+      subject.instance_variable_set(:@test, {
+        :key => :val
+      })
+    end
+
+    #
+
+    context "when creating booleans" do
+      context "when given a method name without ?" do
+        it "should add the ?" do
+          subject.def_ivar_delegator :@test, :bool => true
+          expect(subject).to respond_to(
+            :test?
+          )
+        end
+      end
+
+      #
+
+      context "when given a method name with ?" do
+        it "should keep it" do
+          subject.def_ivar_delegator :@test, :test?, :bool => true
+          expect(subject).to respond_to(
+            :test?
+          )
+        end
+      end
+
+      #
+
+      it "supports reverse booleans" do
+        subject.def_ivar_delegator :@test, :bool => :reverse
+        expect(subject.test?).to eq(
+          false
+        )
+      end
+
+      #
+
+      it "supports truthy booleans" do
+        subject.def_ivar_delegator :@test, :bool => true
+        expect(subject.test?).to eq(
+          true
+        )
+      end
+    end
   end
 
   #
 
-  specify do
-    expect(subject1).to respond_to(
-      :hello1
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1).to respond_to(
-      :world1
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1).to respond_to(
-      :not_world1?
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1).to respond_to(
-      :not_hello1?
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1).to respond_to(
-      :world1
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1).to respond_to(
-      :hello1
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1).to respond_to(
-      :to_s
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1.world1?).to eq(
-      true
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1.hello1 ).to eq(
-      :world1
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1.not_world1?).to eq(
-      false
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1.test2(:it, :works)).to eq(
-      "world it works"
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1.wrap_test).to eq(
-      Pathname.new("hello1")
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1.not_hello1?).to eq(
-      false
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1.world1 ).to eq(
-      :world1
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1.hello1?).to eq(
-      true
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject1.to_s).to eq(
-      "hello2"
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject2.basename).to eq(
-      "hello"
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject2.test1(:hello, :world)).to eq(
-      "routed hello world"
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject2.dirname).to eq(
-      "/tmp"
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3).to respond_to(
-      :hello1
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3).to respond_to(
-      :world1
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3).to respond_to(
-      :not_world1?
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3).to respond_to(
-      :not_hello1?
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3).to respond_to(
-      :world1
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3).to respond_to(
-      :hello1
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3).to respond_to(
-      :to_s
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3).to respond_to(
-      :directory?
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3.world1?).to eq(
-      true
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3.hello1 ).to eq(
-      :world1
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3.not_world1?).to eq(
-      false
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3.test2(:it, :works)).to eq(
-      "world it works"
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3.wrap_test).to eq(
-      Pathname.new("hello1")
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3.not_hello1?).to eq(
-      false
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3.world1 ).to eq(
-      :world1
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3.hello1?).to eq(
-      true
-    )
-  end
-
-  #
-
-  specify do
-    expect(subject3.to_s).to eq(
-      "hello2"
-    )
+  describe "#def_modern_delegator" do
+    before :all do
+      class ForwardableExtendedTestClass2
+        def self.test(*args)
+          if args.empty?
+            :val
+
+          else
+            args
+          end
+        end
+      end
+    end
+
+    #
+
+    it "can delegate to anotehr method" do
+      subject.def_modern_delegator :ForwardableExtendedTestClass2, :test
+      expect(subject.test).to eq(
+        :val
+      )
+    end
+
+    #
+
+    it "can alias a delegate" do
+      subject.def_modern_delegator :ForwardableExtendedTestClass2, :test, :hello
+      expect(subject).to respond_to(
+        :hello
+      )
+    end
+
+    #
+
+    context "passing args" do
+      it "should support passing args before user args" do
+        subject.def_modern_delegator :ForwardableExtendedTestClass2, :test, :args => %{"before"}
+        expect(subject.test("world")).to eq [
+          "before", "world"
+        ]
+      end
+
+      #
+
+      it "should support passing args before and after user args" do
+        subject.def_modern_delegator :ForwardableExtendedTestClass2, :test, \
+          :args => { :before => %{"before"}, :after => %{"after"}}
+
+        expect(subject.test("world")).to eq [
+          "before", "world", "after"
+        ]
+      end
+
+      #
+
+      it "should support passing args after user args" do
+        subject.def_modern_delegator :ForwardableExtendedTestClass2, :test, \
+          :args => { :after => %{"after"}}
+
+        expect(subject.test("world")).to eq [
+          "world", "after"
+        ]
+      end
+    end
   end
 end
